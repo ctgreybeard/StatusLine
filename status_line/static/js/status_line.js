@@ -2,12 +2,14 @@ $(function() {
     function StatusLineViewModel(parameters) {
         var self = this;
 
-        self.status_line = ko.observable();
+        self.status_lcd = ko.observable();
+        self.status_fan = ko.observable();
         self.show_status = ko.observable(false);
 
         self.initialMessage = function(data) {
-            self.status_line(data.status_line);
-            self.show_status(data.status_line ? true : false);
+            self.status_lcd(data.status_lcd);
+            self.status_fan(data.status_fan);
+            self.show_status(data.status_lcd ? true : data.status_fan ? true : false);
         };
 
         self.onStartupComplete = function() {
@@ -25,7 +27,8 @@ $(function() {
                 return;
             }
 
-            self.status_line(data.status_line);
+            self.status_lcd(data.status_lcd);
+            self.status_fan(data.status_fan);
             self.show_status(true);
         };
     }

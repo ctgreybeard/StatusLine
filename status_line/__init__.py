@@ -12,15 +12,29 @@ class StatusLinePlugin(octoprint.plugin.TemplatePlugin,
                        ):
 
     def __init__(self):
-        self.message = ""
+        self.fan = "--"
+        self.lcd = ""
 
     # OctoPrintPlugin hook
 
     def hook_m117(self, comm_instance, phase, cmd, cmd_type, gcode, *args, **kwargs):
-        if gcode and gcode == "M117":
-            self._logger.debug("Sent M117 command: {0}".format(cmd))
-            self.message = cmd[5:]
-            self._plugin_manager.send_plugin_message(self._identifier, dict(status_line=self.message))
+        if gcode:
+            should_send = False
+            if gcode == "M117":
+                self._logger.debug("Sent M117 command: {0}".format(cmd))
+                self.lcd = cmd[5:]
+                should_send = True
+            elif gcode == "M107":
+                self.fan = "00"
+                should_send = True
+            elif gcode == "M106":
+                cmda = cmd.split()
+                for a in cmda:
+                    if a[0] == 'S':
+                        self.fan = a[1:]
+                        should_send = True
+            if should_send:
+                self._plugin_manager.send_plugin_message(self._identifier, dict(status_lcd=self.lcd, status_fan=self.fan))
 
     # AssetPlugin
 
@@ -40,7 +54,8 @@ class StatusLinePlugin(octoprint.plugin.TemplatePlugin,
 
     def on_api_get(self, request):
         return flask.jsonify(dict(
-            status_line=self.message
+            status_lcd=self.lcd,
+            status_fan=self.fan,
         ))
 
 __plugin_name__ = "Status Line"

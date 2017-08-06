@@ -1,8 +1,8 @@
 # StatusLine
 
-Simple plugin which prints the controller status line (actually the M117 Display Message command) on the SideBar
+Simple plugin which prints the controller status line (actually the M117 Display Message command)  and the part fan setting on the SideBar
 
-![StatusLine](status_line.png?raw=true) 
+![StatusLine](status_line.png?raw=true)
 
 ## Setup
 
